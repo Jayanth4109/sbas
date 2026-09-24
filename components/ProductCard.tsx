@@ -1,13 +1,24 @@
+"use client";
+
 import { HugeiconsIcon } from "@hugeicons/react";
-import { WhatsappIcon } from "@hugeicons/core-free-icons";
+import { WhatsappIcon, ShoppingCart01Icon } from "@hugeicons/core-free-icons";
 import { Surface } from "@/components/stepwise/primitives/surface";
 import { Text } from "@/components/stepwise/typography";
 import { Button } from "@/components/stepwise/button";
+import { toast } from "@/components/stepwise/toast";
 import type { Product } from "@/lib/types";
 import { whatsappOrderLink } from "@/lib/whatsapp";
+import { useCart } from "@/lib/cart";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
 
 export function ProductCard({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
+  const { addItem } = useCart();
+
+  function handleAddToCart() {
+    addItem({ productId: product.id, name: product.name, price: product.price, photoUrl });
+    toast.success(`Added ${product.name} to cart`);
+  }
+
   return (
     <Surface
       radius={24}
@@ -39,21 +50,30 @@ export function ProductCard({ product, photoUrl }: { product: Product; photoUrl:
           )}
         </div>
 
-        <div className="mt-auto flex items-center justify-between gap-3 pt-1">
-          <Text variant="h5-soft" className="text-[var(--brand-strong)]">
-            ₹{product.price}
-          </Text>
+        <Text variant="h5-soft" className="mt-auto text-[var(--brand-strong)]">
+          ₹{product.price}
+        </Text>
+
+        <div className="flex gap-2">
+          <Button
+            variant="soft"
+            size="sm"
+            fullWidth
+            icon={<HugeiconsIcon icon={ShoppingCart01Icon} size={15} strokeWidth={1.8} />}
+            onClick={handleAddToCart}
+          >
+            Add to cart
+          </Button>
           <Button
             href={whatsappOrderLink(product)}
             target="_blank"
             rel="noopener noreferrer"
             size="sm"
-            variant="solid"
-            icon={<HugeiconsIcon icon={WhatsappIcon} size={15} strokeWidth={2} />}
-            className="bg-gradient-to-b from-[var(--brand)] to-[var(--brand-strong)] dark:from-[var(--brand)] dark:to-[var(--brand-strong)]"
-          >
-            Order
-          </Button>
+            iconOnly
+            aria-label="Order this item now on WhatsApp"
+            icon={<HugeiconsIcon icon={WhatsappIcon} size={16} strokeWidth={2} />}
+            className="bg-gradient-to-b from-[var(--brand)] to-[var(--brand-strong)]"
+          />
         </div>
       </div>
     </Surface>

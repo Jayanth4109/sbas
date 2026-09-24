@@ -46,3 +46,32 @@ create policy "Public can read product photos"
   on storage.objects for select
   to public
   using (bucket_id = 'product-photos');
+
+-- Orders placed from the storefront (single-item or cart checkout via
+-- WhatsApp). Written by /api/orders using the service_role key, which
+-- recomputes prices from `products` server-side rather than trusting the
+-- client - so there is no insert policy here either.
+create table if not exists orders (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users(id) on delete set null,
+  customer_name text,
+  customer_phone text,
+  items jsonb not null,
+  total numeric(10, 2) not null check (total >= 0),
+  status text not null default 'pending' check (status in ('pending', 'confirmed', 'cancelled')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists orders_user_id_created_at_idx
+  on orders (user_id, created_at desc);
+
+create index if not exists orders_created_at_idx
+  on orders (created_at desc);
+
+alter table orders enable row level security;
+
+-- Signed-in customers can see only their own orders.
+create policy "Users can read their own orders"
+  on orders for select
+  to authenticated
+  using (user_id = auth.uid());
