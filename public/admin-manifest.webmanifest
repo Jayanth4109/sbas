@@ -1,0 +1,13 @@
+{
+  "name": "SBAS Inventory",
+  "short_name": "SBAS",
+  "description": "Sri Babuji Ayurvedic Stores - inventory app",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#ecfdf5",
+  "theme_color": "#047857",
+  "icons": [
+    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
