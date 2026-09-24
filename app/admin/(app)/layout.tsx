@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminChrome } from "./AdminChrome";
+import { AdminNav } from "./AdminNav";
 
 export const metadata: Metadata = {
   title: "SBAS Inventory",
@@ -13,6 +14,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <AdminChrome />
+      <AdminNav />
       {/* Extra bottom padding beyond safe-area-inset-bottom: several mobile
           browsers (Arc, etc.) keep a persistent bottom toolbar that isn't
           reported through that env var at all, and can otherwise cover the
