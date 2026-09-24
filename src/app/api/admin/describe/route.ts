@@ -1,7 +1,16 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthed } from "@/lib/auth";
 
-const DEFAULT_MODEL = "google/gemma-4-31b-it:free";
+// Free-tier models get rate-limited by their upstream provider fairly often.
+// OpenRouter tries these in order and falls through automatically if one is
+// unavailable (max 3 per request). Picked from different providers so one
+// provider's congestion doesn't take the whole thing down.
+// https://openrouter.ai/docs/features/model-routing
+const FALLBACK_MODELS = [
+  "nvidia/nemotron-3-super-120b-a12b:free",
+  "google/gemma-4-31b-it:free",
+  "liquid/lfm-2.5-2.6b:free",
+];
 
 export async function POST(req: Request) {
   if (!(await isAdminAuthed())) {
@@ -30,8 +39,13 @@ Owner's notes: ${notes?.trim() || "(none given)"}`;
       Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: process.env.OPENROUTER_MODEL || DEFAULT_MODEL,
-      max_tokens: 200,
+      models: process.env.OPENROUTER_MODEL
+        ? [process.env.OPENROUTER_MODEL, ...FALLBACK_MODELS].slice(0, 3)
+        : FALLBACK_MODELS,
+      // Some free models spend their token budget on hidden "reasoning"
+      // before writing the actual answer, so this needs headroom beyond
+      // what a 2-3 sentence description would normally take.
+      max_tokens: 600,
       messages: [{ role: "user", content: prompt }],
     }),
   });
@@ -43,6 +57,10 @@ Owner's notes: ${notes?.trim() || "(none given)"}`;
   }
 
   const data = await response.json();
-  const description = data.choices?.[0]?.message?.content?.trim() ?? "";
+  const description = data.choices?.[0]?.message?.content?.trim();
+  if (!description) {
+    console.error("OpenRouter returned no content", JSON.stringify(data));
+    return NextResponse.json({ error: "Could not generate a description right now" }, { status: 502 });
+  }
   return NextResponse.json({ description });
 }
