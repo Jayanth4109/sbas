@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@import "../components/stepwise/fonts.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #fbfaf8;
+  --foreground: #211c16;
+
+  /* Brand: warm, earthy, apothecary-adjacent rather than generic SaaS green. */
+  --brand: #2f6b4f;
+  --brand-strong: #244f3b;
+  --brand-soft: #eaf1ec;
+
+  --font-sans: "Inter Display", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --ui-border: rgb(33 28 22 / 10%);
+  --ui-border-subtle: rgb(33 28 22 / 6%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --font-sans: var(--font-sans);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}

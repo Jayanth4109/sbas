@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored source from `npx stepwise-ui add`, not ours to lint or edit.
+    "components/stepwise/**",
+    "lib/theme.tsx",
+    "lib/utils/cn.ts",
   ]),
 ]);
 
