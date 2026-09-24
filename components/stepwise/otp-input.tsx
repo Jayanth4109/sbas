@@ -33,7 +33,7 @@ const cellBorder = (error: boolean, focused: boolean) =>
   error
     ? { width: 2, opacity: 1, color: 'var(--ui-border-error, #fb7185)' }
     : focused
-      ? { width: 2, opacity: 1, color: '#38bdf8' } // sky-400, matching every other focus indicator in the library
+      ? { width: 2, opacity: 1, color: 'var(--ui-border-focus, #38bdf8)' }
       : { width: 1, opacity: 1, color: 'var(--ui-border, rgb(138 138 141 / 0.23))' }
 
 export function OtpInput({

@@ -5,12 +5,14 @@ import { Text } from "@/components/stepwise/typography";
 import { Button } from "@/components/stepwise/button";
 import type { Product } from "@/lib/types";
 import { whatsappOrderLink } from "@/lib/whatsapp";
+import { SQUIRCLE_BORDER } from "@/lib/ui";
 
 export function ProductCard({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
   return (
     <Surface
       radius={24}
-      className="flex h-full flex-col overflow-hidden border border-[var(--ui-border)] bg-white shadow-[0_1px_2px_rgb(33_28_22_/_4%),0_8px_24px_-12px_rgb(33_28_22_/_12%)]"
+      lisse={{ middleBorder: SQUIRCLE_BORDER }}
+      className="flex h-full flex-col overflow-hidden bg-white shadow-[0_1px_2px_rgb(33_28_22_/_4%),0_8px_24px_-12px_rgb(33_28_22_/_12%)]"
     >
       <div className="relative aspect-square w-full bg-brand-soft">
         {photoUrl ? (

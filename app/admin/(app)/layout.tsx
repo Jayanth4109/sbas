@@ -7,13 +7,17 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: "SBAS Inventory", statusBarStyle: "default" },
 };
 
-export const viewport = { themeColor: "#047857" };
+export const viewport = { themeColor: "#2f6b4f" };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[var(--background)]">
       <AdminChrome />
-      <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
+      {/* Extra bottom padding beyond safe-area-inset-bottom: several mobile
+          browsers (Arc, etc.) keep a persistent bottom toolbar that isn't
+          reported through that env var at all, and can otherwise cover the
+          last element on the page. */}
+      <main className="mx-auto max-w-2xl px-4 pt-6 pb-24">{children}</main>
     </div>
   );
 }

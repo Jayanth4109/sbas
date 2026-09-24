@@ -3,13 +3,14 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Camera01Icon, AiMagicIcon } from "@hugeicons/core-free-icons";
+import { Camera01Icon, ImageUpload01Icon, AiMagicIcon } from "@hugeicons/core-free-icons";
 import type { Product } from "@/lib/types";
 import { Surface } from "@/components/stepwise/primitives/surface";
 import { Text } from "@/components/stepwise/typography";
 import { Input } from "@/components/stepwise/input";
 import { Button } from "@/components/stepwise/button";
 import { toast } from "@/components/stepwise/toast";
+import { SQUIRCLE_BORDER } from "@/lib/ui";
 
 export function ProductForm({
   product,
@@ -20,7 +21,8 @@ export function ProductForm({
 }) {
   const router = useRouter();
   const isEdit = Boolean(product);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product?.price?.toString() ?? "");
@@ -107,7 +109,8 @@ export function ProductForm({
       <div className="flex flex-col items-center gap-3">
         <Surface
           radius={24}
-          className="h-40 w-40 overflow-hidden border border-[var(--ui-border)] bg-brand-soft"
+          lisse={{ middleBorder: SQUIRCLE_BORDER }}
+          className="h-40 w-40 overflow-hidden bg-brand-soft"
         >
           {previewUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -123,20 +126,42 @@ export function ProductForm({
             </div>
           )}
         </Surface>
-        <Button
-          type="button"
-          variant="soft"
-          size="sm"
-          icon={<HugeiconsIcon icon={Camera01Icon} size={15} strokeWidth={1.8} />}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {previewUrl ? "Change photo" : "Take / choose photo"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="soft"
+            size="sm"
+            icon={<HugeiconsIcon icon={Camera01Icon} size={15} strokeWidth={1.8} />}
+            onClick={() => cameraInputRef.current?.click()}
+          >
+            Take photo
+          </Button>
+          <Button
+            type="button"
+            variant="soft"
+            size="sm"
+            icon={<HugeiconsIcon icon={ImageUpload01Icon} size={15} strokeWidth={1.8} />}
+            onClick={() => galleryInputRef.current?.click()}
+          >
+            Choose from gallery
+          </Button>
+        </div>
+        {/* Two separate inputs, not one with a capture attribute: some mobile
+            browsers drop the gallery option entirely when accept+capture are
+            combined, which is exactly the "can't get a real camera view" bug
+            this was built to avoid. */}
         <input
-          ref={fileInputRef}
+          ref={cameraInputRef}
           type="file"
           accept="image/*"
           capture="environment"
+          onChange={onPhotoChange}
+          className="hidden"
+        />
+        <input
+          ref={galleryInputRef}
+          type="file"
+          accept="image/*"
           onChange={onPhotoChange}
           className="hidden"
         />
@@ -187,11 +212,11 @@ export function ProductForm({
           onChange={(e) => setDescription(e.target.value)}
           rows={4}
           placeholder="Tap 'Write with AI' to generate this from the name and notes above"
-          className="rounded-[14px] border border-[var(--ui-border)] bg-white px-3.5 py-2.5 text-[14px] text-[var(--foreground)] placeholder:text-[var(--foreground)]/35 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/25"
+          className="rounded-[14px] border border-[var(--ui-border)] bg-white px-3.5 py-2.5 text-[14px] text-[var(--foreground)] placeholder:text-[var(--foreground)]/35 outline-none focus:border-[var(--brand)] focus:ring-2 focus:ring-[var(--brand)]/20"
         />
       </div>
 
-      <Button type="submit" size="lg" fullWidth loading={saving}>
+      <Button type="submit" size="lg" fullWidth loading={saving} className="mb-[env(safe-area-inset-bottom)]">
         {isEdit ? "Save changes" : "Add product"}
       </Button>
     </form>
