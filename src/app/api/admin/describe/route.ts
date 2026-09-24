@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthed } from "@/lib/auth";
 
-const DEFAULT_MODEL = "meta-llama/llama-3.1-8b-instruct:free";
+const DEFAULT_MODEL = "google/gemma-4-31b-it:free";
 
 export async function POST(req: Request) {
   if (!(await isAdminAuthed())) {
