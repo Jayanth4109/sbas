@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Leaf02Icon,
@@ -15,7 +16,6 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { Text } from "@/components/stepwise/typography";
 import { Button } from "@/components/stepwise/button";
 import { Surface } from "@/components/stepwise/primitives/surface";
-import { DottedGrid } from "@/components/stepwise/dotted-grid";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
 import { STORE_ADDRESS, STORE_MAP_LINK, STORE_MAP_EMBED_SRC } from "@/lib/store";
 
@@ -61,16 +61,35 @@ export default async function LandingPage() {
       <SiteHeader storeName={storeName} />
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden bg-[var(--brand-soft)]">
-        <DottedGrid className="text-[var(--brand)]/25" size={28} dotSize={1.6} />
-        <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-6 px-5 py-20 text-center sm:px-8 sm:py-28">
+      <section className="relative overflow-hidden bg-[#f2ead9]">
+        {/* Art-directed: two different crops, not one image resized - the
+            mobile version is a tall portrait, desktop a short landscape,
+            each keeping the decorative leaves framed and the centre clear
+            for text. */}
+        <Image
+          src="/hero/hero-mobile.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-top sm:hidden"
+        />
+        <Image
+          src="/hero/hero-desktop.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="hidden object-cover sm:block"
+        />
+        <div className="relative mx-auto flex min-h-[560px] max-w-6xl flex-col items-center justify-center gap-6 px-5 text-center sm:aspect-[1672/941] sm:min-h-0 sm:px-8">
           <span className="rounded-full bg-white px-4 py-1.5 text-[13px] font-medium text-[var(--brand-strong)] shadow-sm">
             A family pharmacy, now online
           </span>
           <Text variant="hero" className="max-w-2xl text-[var(--brand-strong)]">
             {storeName}
           </Text>
-          <Text variant="body-soft" className="max-w-xl text-[var(--foreground)]/65">
+          <Text variant="body-soft" className="max-w-xl text-[var(--foreground)]/70">
             Trusted Ayurvedic medicines for your family, now just as easy to browse online as
             it is to walk into our shop.
           </Text>
