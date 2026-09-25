@@ -16,6 +16,10 @@
 
   --ui-border: rgb(33 28 22 / 10%);
   --ui-border-subtle: rgb(33 28 22 / 6%);
+  /* Stepwise components fall back to sky blue for focus/accent states -
+     override with the brand green everywhere they read this token. */
+  --ui-border-focus: var(--brand);
+  --ui-accent: var(--brand);
 }
 
 @theme inline {

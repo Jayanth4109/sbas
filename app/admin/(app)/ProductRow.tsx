@@ -10,6 +10,7 @@ import { Text } from "@/components/stepwise/typography";
 import { Button } from "@/components/stepwise/button";
 import { Modal } from "@/components/stepwise/modal";
 import { toast } from "@/components/stepwise/toast";
+import { SQUIRCLE_BORDER } from "@/lib/ui";
 
 export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
   const router = useRouter();
@@ -52,7 +53,8 @@ export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: 
   return (
     <Surface
       radius={18}
-      className="flex items-center gap-3 border border-[var(--ui-border)] bg-white p-3"
+      lisse={{ middleBorder: SQUIRCLE_BORDER }}
+      className="flex items-center gap-3 bg-white p-3"
     >
       <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-[12px] bg-brand-soft">
         {photoUrl && (
