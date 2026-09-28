@@ -80,3 +80,15 @@ create policy "Users can read their own orders"
   on orders for select
   to authenticated
   using (user_id = auth.uid());
+
+-- Brute-force throttle for the admin PIN login (/api/admin/login), keyed by
+-- IP. Persisted here rather than in-memory so the lockout survives
+-- serverless cold starts. Written only by the service_role key.
+create table if not exists admin_login_attempts (
+  ip text primary key,
+  attempts int not null default 0,
+  locked_until timestamptz,
+  updated_at timestamptz not null default now()
+);
+
+alter table admin_login_attempts enable row level security;

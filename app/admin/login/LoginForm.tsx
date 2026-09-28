@@ -9,7 +9,7 @@ import { Spinner } from "@/components/stepwise/spinner";
 
 // Matches the length of ADMIN_PIN configured for this store. Update this if
 // the PIN length changes.
-const PIN_LENGTH = 4;
+const PIN_LENGTH = 6;
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "back"] as const;
 
 export function LoginForm() {

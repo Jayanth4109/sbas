@@ -28,13 +28,13 @@ export function AdminChrome() {
         SBAS Inventory
       </Text>
       <Button
-        variant="ghost"
+        variant="destructive"
         size="sm"
-        iconOnly
-        aria-label="Log out"
         icon={<HugeiconsIcon icon={Logout03Icon} size={16} strokeWidth={1.8} />}
         onClick={logout}
-      />
+      >
+        Log out
+      </Button>
     </header>
   );
 }
