@@ -54,15 +54,24 @@ export function SiteHeader({ storeName, overlay = false }: { storeName: string; 
           </span>
           <Text
             variant="h6"
-            className={`hidden sm:block ${solid ? "text-[var(--brand-strong)]" : "text-[var(--foreground)]"}`}
+            className={`max-w-[110px] text-[11px] leading-tight sm:max-w-none sm:text-[15px] sm:leading-normal ${
+              solid ? "text-[var(--brand-strong)]" : "text-[var(--foreground)]"
+            }`}
           >
             {storeName}
           </Text>
         </Link>
 
-        {/* Glassy floating pill - cart + menu, always visually separated from
-            the page behind it rather than a full-width bar. */}
-        <div className="ml-auto flex items-center gap-1 rounded-full border border-white/40 bg-white/30 p-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.15)] backdrop-blur-md">
+        {/* A glassy floating pill only while the header itself is still
+            transparent (over the hero) - once scrolling gives the header its
+            own solid fill, the pill would just be a redundant background. */}
+        <div
+          className={`ml-auto flex items-center gap-1 rounded-full p-1 transition-[background-color,border-color,box-shadow] duration-300 ${
+            solid
+              ? "border border-transparent bg-transparent shadow-none"
+              : "border border-white/40 bg-white/30 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.15)] backdrop-blur-md"
+          }`}
+        >
           <Link
             href="/cart"
             className="relative flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"

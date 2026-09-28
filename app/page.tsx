@@ -94,11 +94,14 @@ export default async function LandingPage() {
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-5 px-5 text-center sm:px-8">
           <Text
             variant="caption"
-            className="mt-6 uppercase tracking-[0.2em] text-[var(--brand-strong)]/70 sm:hidden"
+            className="mt-6 font-bold uppercase tracking-[0.2em] text-[var(--brand-strong)]/70 sm:hidden"
           >
             {storeName}
           </Text>
-          <Text variant="hero" className="max-w-2xl font-bold text-[var(--foreground)]">
+          <Text
+            variant="hero"
+            className="max-w-2xl text-[32px] text-[var(--foreground)] sm:text-[48px] lg:text-[64px]"
+          >
             Your neighbourhood
             <br />
             Ayurvedic pharmacy,
