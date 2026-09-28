@@ -22,7 +22,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const name = form.get("name");
     const priceRaw = form.get("price");
     const description = form.get("description");
+    const category = form.get("category");
     const isActive = form.get("is_active");
+    const inStock = form.get("in_stock");
     const photo = form.get("photo");
 
     if (typeof name === "string" && name.trim()) updates.name = name.trim();
@@ -34,7 +36,9 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       updates.price = price;
     }
     if (typeof description === "string") updates.description = description.trim() || null;
+    if (typeof category === "string") updates.category = category.trim() || null;
     if (typeof isActive === "string") updates.is_active = isActive === "true";
+    if (typeof inStock === "string") updates.in_stock = inStock === "true";
 
     if (photo instanceof File && photo.size > 0) {
       if (photo.size > MAX_PHOTO_BYTES) {
@@ -54,6 +58,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   } else {
     const body = await req.json().catch(() => ({}));
     if (typeof body.is_active === "boolean") updates.is_active = body.is_active;
+    if (typeof body.in_stock === "boolean") updates.in_stock = body.in_stock;
   }
 
   const { data, error } = await supabase

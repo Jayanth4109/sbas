@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import { createPublicClient } from "@/lib/supabase/public";
 import { publicPhotoUrl } from "@/lib/storage";
 import type { Product } from "@/lib/types";
-import { ProductCard } from "@/components/ProductCard";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Text } from "@/components/stepwise/typography";
+import { ProductsBrowser } from "./ProductsBrowser";
 
 export const revalidate = 30;
 
@@ -16,6 +17,10 @@ export default async function ProductsPage() {
     .eq("is_active", true)
     .order("created_at", { ascending: false })
     .returns<Product[]>();
+
+  const photoUrls = Object.fromEntries(
+    (products ?? []).map((p) => [p.id, publicPhotoUrl(p.image_path)]),
+  );
 
   const storeName = process.env.NEXT_PUBLIC_STORE_NAME ?? "Sri Babuji Ayurvedic Stores";
 
@@ -41,15 +46,9 @@ export default async function ProductsPage() {
             </Text>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                photoUrl={publicPhotoUrl(product.image_path)}
-              />
-            ))}
-          </div>
+          <Suspense fallback={null}>
+            <ProductsBrowser products={products} photoUrls={photoUrls} />
+          </Suspense>
         )}
       </div>
 

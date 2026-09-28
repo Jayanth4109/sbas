@@ -9,6 +9,7 @@ import { Surface } from "@/components/stepwise/primitives/surface";
 import { Text } from "@/components/stepwise/typography";
 import { Input } from "@/components/stepwise/input";
 import { Button } from "@/components/stepwise/button";
+import { Toggle } from "@/components/stepwise/toggle";
 import { toast } from "@/components/stepwise/toast";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
 
@@ -26,6 +27,8 @@ export function ProductForm({
 
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product?.price?.toString() ?? "");
+  const [category, setCategory] = useState(product?.category ?? "");
+  const [inStock, setInStock] = useState(product?.in_stock ?? true);
   const [notes, setNotes] = useState("");
   const [description, setDescription] = useState(product?.description ?? "");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -87,6 +90,8 @@ export function ProductForm({
       form.set("name", name.trim());
       form.set("price", price);
       form.set("description", description);
+      form.set("category", category);
+      form.set("in_stock", String(inStock));
       if (photoFile) form.set("photo", photoFile);
 
       const url = isEdit ? `/api/admin/products/${product!.id}` : "/api/admin/products";
@@ -182,6 +187,20 @@ export function ProductForm({
         value={price}
         onChange={(e) => setPrice(e.target.value.replace(/[^0-9.]/g, ""))}
         error={priceError ?? undefined}
+      />
+
+      <Input
+        label="Category (optional)"
+        placeholder="e.g. Immunity, Digestion, Skin Care"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      />
+
+      <Toggle
+        checked={inStock}
+        onChange={setInStock}
+        label="In stock"
+        hint={inStock ? "Customers can order this" : "Shown as out of stock on the storefront"}
       />
 
       <Input

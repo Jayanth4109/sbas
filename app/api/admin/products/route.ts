@@ -29,6 +29,8 @@ export async function POST(req: Request) {
   const name = form.get("name");
   const priceRaw = form.get("price");
   const description = form.get("description");
+  const category = form.get("category");
+  const inStockRaw = form.get("in_stock");
   const photo = form.get("photo");
 
   if (typeof name !== "string" || !name.trim()) {
@@ -65,8 +67,10 @@ export async function POST(req: Request) {
       name: name.trim(),
       price,
       description: typeof description === "string" && description.trim() ? description.trim() : null,
+      category: typeof category === "string" && category.trim() ? category.trim() : null,
       image_path: imagePath,
       is_active: true,
+      in_stock: inStockRaw !== "false",
     })
     .select()
     .single();

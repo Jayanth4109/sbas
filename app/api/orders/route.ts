@@ -26,7 +26,8 @@ export async function POST(req: Request) {
     .from("products")
     .select("id, name, price")
     .in("id", Array.from(requested.keys()))
-    .eq("is_active", true);
+    .eq("is_active", true)
+    .eq("in_stock", true);
 
   if (fetchError) {
     return NextResponse.json({ error: fetchError.message }, { status: 500 });

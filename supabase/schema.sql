@@ -5,13 +5,17 @@ create table if not exists products (
   price numeric(10, 2) not null check (price >= 0),
   description text,
   image_path text,
+  category text,
   is_active boolean not null default true,
+  in_stock boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
 create index if not exists products_is_active_created_at_idx
   on products (is_active, created_at desc);
+
+create index if not exists products_category_idx on products (category) where category is not null;
 
 alter table products enable row level security;
 
