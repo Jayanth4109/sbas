@@ -3,7 +3,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Leaf02Icon,
   WhatsappIcon,
-  DeliveryTruck01Icon,
   Store01Icon,
   ArrowRight02Icon,
   Location01Icon,
@@ -100,13 +99,13 @@ export default async function LandingPage() {
             {storeName}
           </Text>
           <Text variant="hero" className="max-w-2xl text-[var(--foreground)]">
-            Ayurvedic care,
+            Your neighbourhood Ayurvedic
             <br />
-            <span className="text-[var(--brand-strong)]">made simple.</span>
+            <span className="text-[var(--brand-strong)]">pharmacy, now online.</span>
           </Text>
           <Text variant="body-soft" className="max-w-xl text-[var(--foreground)]/70">
-            Trusted Ayurvedic medicines for your family, now just as easy to browse online as
-            it is to walk into our shop.
+            Genuine Ayurvedic medicines, sourced and stocked with care - now easier to browse
+            before you visit or order.
           </Text>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Button
@@ -131,7 +130,7 @@ export default async function LandingPage() {
           <Surface
             radius={24}
             lisse={{ middleBorder: SQUIRCLE_BORDER }}
-            className="flex flex-col items-start gap-4 bg-[var(--brand-soft)] p-7 sm:flex-row sm:items-center md:col-span-2"
+            className="flex flex-col items-start gap-4 bg-[var(--brand-soft)] p-7"
           >
             <IconArt icon={Leaf02Icon} />
             <div className="flex flex-col items-start gap-1 text-left">
@@ -158,20 +157,6 @@ export default async function LandingPage() {
 
           <Surface
             radius={24}
-            lisse={{ middleBorder: SQUIRCLE_BORDER }}
-            className="flex flex-col items-start gap-4 bg-[#faf3e6] p-7"
-          >
-            <IconArt icon={DeliveryTruck01Icon} />
-            <div className="flex flex-col items-start gap-1 text-left">
-              <Text variant="h5-soft">Shipped to your door</Text>
-              <Text variant="body-soft" className="text-[var(--foreground)]/60">
-                Once confirmed, we pack it and send it out via trusted local courier.
-              </Text>
-            </div>
-          </Surface>
-
-          <Surface
-            radius={24}
             lisse={{ middleBorder: { width: 1, opacity: 1, color: "rgb(255 255 255 / 10%)" } }}
             className="flex flex-col items-start gap-4 bg-[var(--brand-strong)] p-7 text-white md:col-span-2 md:flex-row md:items-center"
           >
@@ -190,7 +175,7 @@ export default async function LandingPage() {
                 A pharmacy you already trust
               </Text>
               <Text variant="body-soft" className="text-white/65">
-                Same family, same shop, now easier to browse from home.
+                We stand behind everything we sell.
               </Text>
             </div>
           </Surface>
@@ -200,9 +185,21 @@ export default async function LandingPage() {
       {/* ── Popular products ── */}
       {popular.length > 0 && (
         <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
-          <div className="mb-8 flex items-end justify-between">
-            <Text variant="h2">Popular right now</Text>
-            <Button href="/products" variant="ghost" size="sm">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Text variant="h2">Popular right now</Text>
+              <Text variant="body-soft" className="text-[var(--foreground)]/55">
+                A few of our most-ordered medicines, picked for you.
+              </Text>
+            </div>
+            <Button
+              href="/products"
+              variant="ghost"
+              size="sm"
+              icon={<HugeiconsIcon icon={ArrowRight02Icon} size={14} strokeWidth={2.2} />}
+              iconPosition="right"
+              className="shrink-0"
+            >
               View all
             </Button>
           </div>
@@ -221,9 +218,21 @@ export default async function LandingPage() {
       {/* ── Category rows, once products are tagged with one ── */}
       {categorySections.map(([category, items]) => (
         <section key={category} className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
-          <div className="mb-8 flex items-end justify-between">
-            <Text variant="h2">{category}</Text>
-            <Button href={`/products?category=${encodeURIComponent(category)}`} variant="ghost" size="sm">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div className="flex flex-col gap-1">
+              <Text variant="h2">{category}</Text>
+              <Text variant="body-soft" className="text-[var(--foreground)]/55">
+                A few of our {category.toLowerCase()} picks, ready to order.
+              </Text>
+            </div>
+            <Button
+              href={`/products?category=${encodeURIComponent(category)}`}
+              variant="ghost"
+              size="sm"
+              icon={<HugeiconsIcon icon={ArrowRight02Icon} size={14} strokeWidth={2.2} />}
+              iconPosition="right"
+              className="shrink-0"
+            >
               View all
             </Button>
           </div>
@@ -240,7 +249,7 @@ export default async function LandingPage() {
       ))}
 
       {/* ── Browse everything ── */}
-      <section className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8">
+      <section className="mx-auto w-full max-w-6xl px-5 py-16 sm:px-8">
         <Surface
           radius={28}
           lisse={{ middleBorder: SQUIRCLE_BORDER }}

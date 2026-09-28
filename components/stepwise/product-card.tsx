@@ -3,7 +3,7 @@
 import { useState, useId } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { ArrowRight02Icon } from '@hugeicons/core-free-icons'
+import { ShoppingCart01Icon } from '@hugeicons/core-free-icons'
 import { cn } from '@/lib/utils/cn'
 import { Surface } from '@/components/stepwise/primitives/surface'
 import { Button } from '@/components/stepwise/button'
@@ -236,12 +236,12 @@ export function ProductCard({
       {/* ── Content ── */}
       <div className="flex flex-col gap-4 p-3 pb-3">
         {/* Name + tag row */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="min-w-0 truncate text-[15px] font-semibold tracking-[-0.03em] text-zinc-700 dark:text-zinc-200">
+        <div className="flex items-start justify-between gap-2">
+          <span className="line-clamp-2 min-w-0 text-[15px] font-semibold tracking-[-0.03em] text-zinc-700 dark:text-zinc-200">
             {name}
           </span>
           {tag && (
-            <span className={cn('flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[-0.01em]', tagStyles[tag.color])}>
+            <span className={cn('mt-0.5 flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-semibold tracking-[-0.01em]', tagStyles[tag.color])}>
               {tag.label}
             </span>
           )}
@@ -353,7 +353,7 @@ export function ProductCard({
                 fullWidth
                 slideIcon
                 iconPosition="right"
-                icon={<HugeiconsIcon icon={ArrowRight02Icon} size={16} strokeWidth={2.5} color="currentColor" />}
+                icon={<HugeiconsIcon icon={ShoppingCart01Icon} size={16} strokeWidth={2.2} color="currentColor" />}
               >
                 {ctaLabel}
               </Button>

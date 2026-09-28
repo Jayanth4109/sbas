@@ -88,7 +88,7 @@ export function SiteHeader({ storeName, overlay = false }: { storeName: string; 
         </div>
       </header>
 
-      <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} side="right" width={300} ariaLabel="Menu">
+      <Drawer open={menuOpen} onClose={() => setMenuOpen(false)} side="bottom" height="auto" ariaLabel="Menu">
         <div className="flex flex-col gap-1">
           <Link
             href="/products"

@@ -30,8 +30,8 @@ export function SiteFooter({ storeName }: { storeName: string }) {
             </Text>
           </div>
           <Text variant="caption-soft" className="text-white/60">
-            Trusted Ayurvedic medicines for your family, the same way we&apos;ve always served
-            our community.
+            Genuine Ayurvedic medicines, stocked with care and personally checked before every
+            order goes out.
           </Text>
         </div>
 

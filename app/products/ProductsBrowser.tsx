@@ -63,8 +63,8 @@ export function ProductsBrowser({
         />
 
         {categories.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => selectCategory("")}>
+          <div className="-mx-5 flex gap-2 overflow-x-auto px-5 pb-1 sm:-mx-8 sm:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <button type="button" onClick={() => selectCategory("")} className="shrink-0">
               <Chip
                 variant={category === "" ? "solid" : "soft"}
                 color={category === "" ? "success" : "idle"}
@@ -74,7 +74,7 @@ export function ProductsBrowser({
               </Chip>
             </button>
             {categories.map((c) => (
-              <button key={c} type="button" onClick={() => selectCategory(c)}>
+              <button key={c} type="button" onClick={() => selectCategory(c)} className="shrink-0">
                 <Chip
                   variant={category === c ? "solid" : "soft"}
                   color={category === c ? "success" : "idle"}

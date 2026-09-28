@@ -330,24 +330,28 @@ function SubmenuItem({ entry, open, onOpen, onClose, menuRootId, onRequestCloseA
 
 export function DropdownMenu({ trigger, items, align = 'start', defaultOpen = false, className }: DropdownMenuProps) {
   const [open, setOpen] = useState(defaultOpen)
-  // The requested alignment can flip at runtime if the panel would overflow
-  // the viewport at that edge - see the layout effect below.
-  const [resolvedAlign, setResolvedAlign] = useState(align)
   const rootRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
   const restoreFocusRef = useRef<HTMLElement | null>(null)
-  const gooId = useId()
   const menuId = useId()
   const reduceMotion = useReducedMotion()
+
+  // Fixed viewport coordinates, computed from the trigger's rect - the panel
+  // is portaled to <body> rather than positioned relative to the trigger,
+  // because an ancestor Surface's squircle clip-path would otherwise cut it
+  // off (clip-path clips all descendants, absolutely positioned or not).
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null)
+  const [resolvedAlign, setResolvedAlign] = useState(align)
 
   useEffect(() => {
     if (!open) return
     const onDown = (e: MouseEvent) => {
       const target = e.target as HTMLElement
-      // Submenu panels are portaled to <body>, so a click inside one is not a
-      // descendant of rootRef and would otherwise count as an outside click.
-      if (rootRef.current && !rootRef.current.contains(target) && !target.closest?.(`[data-menu-root="${menuId}"]`)) {
+      if (
+        rootRef.current && !rootRef.current.contains(target) &&
+        !target.closest?.(`[data-menu-root="${menuId}"]`)
+      ) {
         setOpen(false)
       }
     }
@@ -358,20 +362,53 @@ export function DropdownMenu({ trigger, items, align = 'start', defaultOpen = fa
       document.removeEventListener('mousedown', onDown)
       document.removeEventListener('keydown', onKey)
     }
-  }, [open])
+  }, [open, menuId])
 
-  // Measure before paint so a flip never flickers at the requested edge
-  // first. Re-measures each open in case the trigger moved (resize, scroll
-  // into a different layout) since the last time.
+  // Pass 1: position immediately below the trigger, at the requested edge.
   useLayoutEffect(() => {
-    if (!open) { setResolvedAlign(align); return }
-    const el = panelRef.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    if (align === 'start' && rect.right > window.innerWidth) setResolvedAlign('end')
-    else if (align === 'end' && rect.left < 0) setResolvedAlign('start')
-    else setResolvedAlign(align)
+    if (!open) { setPos(null); return }
+    const r = rootRef.current?.getBoundingClientRect()
+    if (!r) return
+    setPos({ top: r.bottom + 6, left: align === 'end' ? r.right : r.left })
+    setResolvedAlign(align)
   }, [open, align])
+
+  // Pass 2: flip/clamp so the panel never overflows the viewport, measured
+  // and corrected before paint so there is no visible jump.
+  useLayoutEffect(() => {
+    if (!open || !pos) return
+    const p = panelRef.current?.getBoundingClientRect()
+    const r = rootRef.current?.getBoundingClientRect()
+    if (!p || !r) return
+    const nextAlign = p.right > window.innerWidth ? 'end' : p.left < 0 ? 'start' : resolvedAlign
+    const left = Math.min(
+      Math.max(4, nextAlign === 'end' ? r.right - p.width : r.left),
+      window.innerWidth - p.width - 4,
+    )
+    if (nextAlign === resolvedAlign && left === pos.left) return
+    setPos({ top: pos.top, left })
+    setResolvedAlign(nextAlign)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, pos?.left])
+
+  // The panel doesn't follow the trigger while scrolling (it closes instead,
+  // like a native menu) - just keep it correctly placed across resizes.
+  useEffect(() => {
+    if (!open) return
+    const reposition = () => {
+      const r = rootRef.current?.getBoundingClientRect()
+      if (!r) return
+      const width = panelRef.current?.getBoundingClientRect().width ?? 190
+      const left = Math.min(
+        Math.max(4, resolvedAlign === 'end' ? r.right - width : r.left),
+        window.innerWidth - width - 4,
+      )
+      setPos({ top: r.bottom + 6, left })
+    }
+    window.addEventListener('resize', reposition)
+    window.addEventListener('scroll', () => setOpen(false), { capture: true, once: true })
+    return () => window.removeEventListener('resize', reposition)
+  }, [open, resolvedAlign])
 
   // Move focus into the menu on open, restore it to whatever had focus
   // before (the trigger, in the common case) on close.
@@ -384,8 +421,6 @@ export function DropdownMenu({ trigger, items, align = 'start', defaultOpen = fa
     }
   }, [open])
 
-  const originSide = resolvedAlign === 'end' ? { right: 10 } : { left: 10 }
-
   const triggerNode = isValidElement(trigger)
     ? cloneElement(trigger as React.ReactElement<Record<string, unknown>>, {
         'aria-haspopup': 'menu',
@@ -397,72 +432,39 @@ export function DropdownMenu({ trigger, items, align = 'start', defaultOpen = fa
     <div ref={rootRef} className={cn('relative inline-block', className)}>
       <div onClick={() => setOpen(o => !o)}>{triggerNode}</div>
 
-      {/* Goo filter for the open transition: blur merges the trigger-origin
-          blob into the panel itself while it's still small, then the
-          contrast matrix snaps the soft blurred edges back into one smooth
-          silhouette (the classic "gooey blob merge" trick). The filter is a
-          keyframe array that snaps to `none` partway through - by then the
-          panel is most of the way to full size, so content resolves crisp
-          instead of staying blurred once it's readable. */}
-      {!reduceMotion && (
-        <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true">
-          <filter id={gooId}>
-            <feGaussianBlur in="SourceGraphic" stdDeviation="9" result="blur" />
-            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 24 -12" />
-          </filter>
-        </svg>
-      )}
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            ref={panelRef}
-            onKeyDown={rovingKeyDown(menuRef, () => setOpen(false))}
-            className={cn('absolute z-50 mt-2', resolvedAlign === 'end' ? 'right-0' : 'left-0')}
-            style={{ transformOrigin: resolvedAlign === 'end' ? 'top right' : 'top left' }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.18 } }}
-            exit={{ opacity: 0, transition: { duration: 0.14 } }}
-          >
-            {/* This is the wrapper that actually grows - the goo filter rides
-                on the SAME element as the real panel, so what you see melting
-                into shape is the real content, not a decoy layer hidden behind it. */}
+      {typeof document !== 'undefined' && document.body && createPortal(
+        <AnimatePresence>
+          {open && pos && (
             <motion.div
-              className="relative"
-              style={{ transformOrigin: resolvedAlign === 'end' ? 'top right' : 'top left' }}
-              initial={reduceMotion ? { scale: 0.96, y: -4 } : { scale: 0.2, y: 0 }}
+              className="fixed z-50"
+              style={{ top: pos.top, left: pos.left, transformOrigin: resolvedAlign === 'end' ? 'top right' : 'top left' }}
+              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.94, y: -4 }}
               animate={reduceMotion
-                ? { scale: 1, y: 0, filter: 'none', transition: { duration: 0.16, ease: EASE } }
-                : { scale: 1, y: 0, filter: [`url(#${gooId})`, `url(#${gooId})`, 'none'], transition: { duration: 0.36, ease: EASE, filter: { duration: 0.36, times: [0, 0.5, 1] } } }}
-              exit={{ scale: 0.97, y: -2, filter: 'none', transition: { duration: 0.14, ease: EASE } }}
+                ? { opacity: 1, transition: { duration: 0.16 } }
+                : { opacity: 1, scale: 1, y: 0, transition: { duration: 0.16, ease: EASE } }}
+              exit={reduceMotion
+                ? { opacity: 0, transition: { duration: 0.1 } }
+                : { opacity: 0, scale: 0.97, y: -2, transition: { duration: 0.1, ease: EASE } }}
             >
-              {!reduceMotion && (
-                // trigger-origin seed blob - merges into the panel's own
-                // growing edge via the shared goo filter, then dissolves.
-                // Open-only: the close transition stays a plain fast fade.
-                <motion.span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute top-0 rounded-full bg-white dark:bg-zinc-900"
-                  style={originSide}
-                  initial={{ width: 40, height: 40, opacity: 1 }}
-                  animate={{ width: 0, height: 0, opacity: 0, transition: { duration: 0.3, ease: EASE } }}
-                  exit={{ opacity: 0, transition: { duration: 0.1 } }}
-                />
-              )}
-
               <Surface
-                ref={menuRef}
+                ref={(el: HTMLDivElement | null) => {
+                  panelRef.current = el
+                  menuRef.current = el
+                }}
+                data-menu-root={menuId}
                 radius={20}
                 lisse={{ middleBorder: { width: 1, opacity: 1, color: 'var(--ui-border, rgb(138 138 141 / 0.23))' } }}
                 className={PANEL_CLASS}
                 role="menu"
+                onKeyDown={rovingKeyDown(menuRef, () => setOpen(false))}
               >
                 <DropdownMenuList items={items} menuRef={menuRef} menuRootId={menuId} onRequestCloseAll={() => setOpen(false)} />
               </Surface>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </div>
   )
 }
