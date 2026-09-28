@@ -4,6 +4,16 @@ import { WhatsappIcon, Location01Icon } from "@hugeicons/core-free-icons";
 import { Text } from "@/components/stepwise/typography";
 import { STORE_ADDRESS, STORE_MAP_LINK } from "@/lib/store";
 
+function formatPhone(raw: string) {
+  const digits = raw.replace(/\D/g, "");
+  // Indian numbers: country code (91) + 10-digit local number.
+  if (digits.length === 12 && digits.startsWith("91")) {
+    const local = digits.slice(2);
+    return `+91 ${local.slice(0, 5)} ${local.slice(5)}`;
+  }
+  return `+${digits}`;
+}
+
 export function SiteFooter({ storeName }: { storeName: string }) {
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
 
@@ -57,8 +67,10 @@ export function SiteFooter({ storeName }: { storeName: string }) {
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-white/75 hover:text-white"
             >
-              <HugeiconsIcon icon={WhatsappIcon} size={16} strokeWidth={1.8} />
-              <Text variant="body-soft">Message us on WhatsApp</Text>
+              <HugeiconsIcon icon={WhatsappIcon} size={16} strokeWidth={1.8} className="shrink-0" />
+              <Text variant="body-soft" className="leading-none">
+                {formatPhone(whatsappNumber)}
+              </Text>
             </a>
           )}
           <a
@@ -67,8 +79,10 @@ export function SiteFooter({ storeName }: { storeName: string }) {
             rel="noopener noreferrer"
             className="flex items-start gap-2 text-white/75 hover:text-white"
           >
-            <HugeiconsIcon icon={Location01Icon} size={16} strokeWidth={1.8} className="mt-0.5 shrink-0" />
-            <Text variant="body-soft">{STORE_ADDRESS}</Text>
+            <HugeiconsIcon icon={Location01Icon} size={16} strokeWidth={1.8} className="mt-[3px] shrink-0" />
+            <Text variant="body-soft" className="leading-snug">
+              {STORE_ADDRESS}
+            </Text>
           </a>
         </div>
       </div>

@@ -6,7 +6,6 @@ import {
   DeliveryTruck01Icon,
   Store01Icon,
   ArrowRight02Icon,
-  MouseScroll01Icon,
   Location01Icon,
 } from "@hugeicons/core-free-icons";
 import { createPublicClient } from "@/lib/supabase/public";
@@ -47,7 +46,7 @@ export default async function LandingPage() {
     .select("*")
     .eq("is_active", true)
     .order("created_at", { ascending: false })
-    .limit(60)
+    .limit(250)
     .returns<Product[]>();
 
   const products = allProducts ?? [];
@@ -60,16 +59,18 @@ export default async function LandingPage() {
     if (!byCategory.has(key)) byCategory.set(key, []);
     byCategory.get(key)!.push(p);
   }
-  const categorySections = Array.from(byCategory.entries()).slice(0, 3);
+  const categorySections = Array.from(byCategory.entries())
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 3);
 
   const storeName = process.env.NEXT_PUBLIC_STORE_NAME ?? "Sri Babuji Ayurvedic Stores";
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SiteHeader storeName={storeName} />
+      <SiteHeader storeName={storeName} overlay />
 
       {/* ── Hero, full viewport ── */}
-      <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#f2ead9]">
+      <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#f2ead9] pb-20 sm:pb-28">
         {/* Art-directed: two different crops, not one image resized - the
             mobile version is a tall portrait, desktop a short landscape,
             each keeping the decorative leaves framed and the centre clear
@@ -120,14 +121,8 @@ export default async function LandingPage() {
           </div>
         </div>
 
-        {/* Soft fade into the section below, and a scroll hint. */}
+        {/* Soft fade into the section below. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-white" />
-        <div className="absolute inset-x-0 bottom-6 flex flex-col items-center gap-1.5 text-[var(--brand-strong)]/50">
-          <HugeiconsIcon icon={MouseScroll01Icon} size={20} strokeWidth={1.6} />
-          <Text variant="caption-soft" className="uppercase tracking-[0.15em]">
-            Scroll to explore
-          </Text>
-        </div>
       </section>
 
       {/* ── Trust points, bento layout ── */}
