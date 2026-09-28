@@ -94,7 +94,7 @@ export default async function LandingPage() {
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-5 px-5 text-center sm:px-8">
           <Text
             variant="caption"
-            className="mt-6 uppercase tracking-[0.2em] text-[var(--brand-strong)]/70 sm:mt-10"
+            className="mt-6 uppercase tracking-[0.2em] text-[var(--brand-strong)]/70 sm:hidden"
           >
             {storeName}
           </Text>

@@ -44,8 +44,11 @@ export function SiteHeader({ storeName, overlay = false }: { storeName: string; 
         solid ? "bg-[var(--background)]/80 backdrop-blur-md" : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
-        <Link href="/" className="flex items-center gap-2">
+      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3 sm:px-8">
+        <Link
+          href="/"
+          className="flex items-center gap-2 sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2"
+        >
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--brand)] text-[13px] font-semibold text-white">
             SB
           </span>
@@ -59,7 +62,7 @@ export function SiteHeader({ storeName, overlay = false }: { storeName: string; 
 
         {/* Glassy floating pill - cart + menu, always visually separated from
             the page behind it rather than a full-width bar. */}
-        <div className="flex items-center gap-1 rounded-full border border-white/40 bg-white/30 p-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.15)] backdrop-blur-md">
+        <div className="ml-auto flex items-center gap-1 rounded-full border border-white/40 bg-white/30 p-1 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.15)] backdrop-blur-md">
           <Link
             href="/cart"
             className="relative flex h-8 w-8 items-center justify-center rounded-full hover:bg-black/5"
