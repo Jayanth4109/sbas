@@ -77,38 +77,42 @@ export default function CartPage() {
                 key={item.productId}
                 radius={18}
                 lisse={{ middleBorder: SQUIRCLE_BORDER }}
-                className="flex items-center gap-3 bg-white p-3"
+                className="flex flex-col gap-3 bg-white p-3"
               >
-                <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-[12px] bg-brand-soft">
-                  {item.photoUrl && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.photoUrl} alt={item.name} className="h-full w-full object-cover" />
-                  )}
+                <div className="flex items-start gap-3">
+                  <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-[12px] bg-brand-soft">
+                    {item.photoUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={item.photoUrl} alt={item.name} className="h-full w-full object-cover" />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <Text variant="body-soft" className="line-clamp-2">
+                      {item.name}
+                    </Text>
+                    <Text variant="caption-soft" className="text-[var(--foreground)]/50">
+                      ₹{item.price} each
+                    </Text>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <Text variant="body-soft" className="truncate">
-                    {item.name}
-                  </Text>
-                  <Text variant="caption-soft" className="text-[var(--foreground)]/50">
-                    ₹{item.price} each
-                  </Text>
+                <div className="flex items-center justify-between">
+                  <QtyInput
+                    value={item.quantity}
+                    min={1}
+                    max={99}
+                    onChange={(q) => setQuantity(item.productId, q)}
+                    ariaLabel={`Quantity for ${item.name}`}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    iconOnly
+                    aria-label={`Remove ${item.name}`}
+                    icon={<HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.8} />}
+                    onClick={() => removeItem(item.productId)}
+                    className="text-rose-500"
+                  />
                 </div>
-                <QtyInput
-                  value={item.quantity}
-                  min={1}
-                  max={99}
-                  onChange={(q) => setQuantity(item.productId, q)}
-                  ariaLabel={`Quantity for ${item.name}`}
-                />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  iconOnly
-                  aria-label={`Remove ${item.name}`}
-                  icon={<HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.8} />}
-                  onClick={() => removeItem(item.productId)}
-                  className="text-rose-500"
-                />
               </Surface>
             ))}
 

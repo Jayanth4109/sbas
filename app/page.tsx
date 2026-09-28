@@ -69,7 +69,7 @@ export default async function LandingPage() {
       <SiteHeader storeName={storeName} overlay />
 
       {/* ── Hero, full viewport ── */}
-      <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#f2ead9] pb-20 sm:pb-28">
+      <section className="relative flex min-h-[100svh] items-center overflow-hidden bg-[#f2ead9] pb-6 sm:pb-10">
         {/* Art-directed: two different crops, not one image resized - the
             mobile version is a tall portrait, desktop a short landscape,
             each keeping the decorative leaves framed and the centre clear
@@ -94,18 +94,19 @@ export default async function LandingPage() {
         <div className="relative mx-auto flex w-full max-w-6xl flex-col items-center gap-5 px-5 text-center sm:px-8">
           <Text
             variant="caption"
-            className="uppercase tracking-[0.2em] text-[var(--brand-strong)]/70"
+            className="mt-6 uppercase tracking-[0.2em] text-[var(--brand-strong)]/70 sm:mt-10"
           >
             {storeName}
           </Text>
-          <Text variant="hero" className="max-w-2xl text-[var(--foreground)]">
-            Your neighbourhood Ayurvedic
+          <Text variant="hero" className="max-w-2xl font-bold text-[var(--foreground)]">
+            Your neighbourhood
             <br />
-            <span className="text-[var(--brand-strong)]">pharmacy, now online.</span>
+            Ayurvedic pharmacy,
+            <br />
+            <span className="text-[var(--brand-strong)]">now online.</span>
           </Text>
-          <Text variant="body-soft" className="max-w-xl text-[var(--foreground)]/70">
-            Genuine Ayurvedic medicines, sourced and stocked with care - now easier to browse
-            before you visit or order.
+          <Text variant="body" className="max-w-md text-[var(--foreground)]/70">
+            Genuine Ayurvedic medicines, sourced with care - easy to browse before you order.
           </Text>
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             <Button
