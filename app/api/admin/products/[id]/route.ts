@@ -23,6 +23,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const priceRaw = form.get("price");
     const description = form.get("description");
     const category = form.get("category");
+    const quantity = form.get("quantity");
     const isActive = form.get("is_active");
     const inStock = form.get("in_stock");
     const photo = form.get("photo");
@@ -37,6 +38,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     }
     if (typeof description === "string") updates.description = description.trim() || null;
     if (typeof category === "string") updates.category = category.trim() || null;
+    if (typeof quantity === "string") updates.quantity = quantity.trim() || null;
     if (typeof isActive === "string") updates.is_active = isActive === "true";
     if (typeof inStock === "string") updates.in_stock = inStock === "true";
 

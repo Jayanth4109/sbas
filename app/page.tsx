@@ -239,6 +239,29 @@ export default async function LandingPage() {
         </section>
       ))}
 
+      {/* ── Browse everything ── */}
+      <section className="mx-auto w-full max-w-6xl px-5 pb-16 sm:px-8">
+        <Surface
+          radius={28}
+          lisse={{ middleBorder: SQUIRCLE_BORDER }}
+          className="flex flex-col items-center gap-4 bg-[var(--brand-soft)] px-6 py-12 text-center"
+        >
+          <Text variant="h2">Looking for something else?</Text>
+          <Text variant="body-soft" className="max-w-md text-[var(--foreground)]/60">
+            Browse our full catalogue of Ayurvedic medicines, oils, and wellness essentials.
+          </Text>
+          <Button
+            href="/products"
+            size="lg"
+            icon={<HugeiconsIcon icon={ArrowRight02Icon} size={17} strokeWidth={2.2} />}
+            iconPosition="right"
+            className="bg-gradient-to-b from-[var(--brand)] to-[var(--brand-strong)]"
+          >
+            View all products
+          </Button>
+        </Surface>
+      </section>
+
       {/* ── Location ── */}
       <section className="bg-white">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-5 py-16 sm:px-8 lg:grid-cols-2 lg:items-center">

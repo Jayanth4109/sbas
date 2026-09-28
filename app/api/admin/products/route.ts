@@ -30,6 +30,7 @@ export async function POST(req: Request) {
   const priceRaw = form.get("price");
   const description = form.get("description");
   const category = form.get("category");
+  const quantity = form.get("quantity");
   const inStockRaw = form.get("in_stock");
   const photo = form.get("photo");
 
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
       price,
       description: typeof description === "string" && description.trim() ? description.trim() : null,
       category: typeof category === "string" && category.trim() ? category.trim() : null,
+      quantity: typeof quantity === "string" && quantity.trim() ? quantity.trim() : null,
       image_path: imagePath,
       is_active: true,
       in_stock: inStockRaw !== "false",

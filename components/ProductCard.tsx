@@ -28,7 +28,13 @@ export function ProductCard({ product, photoUrl }: { product: Product; photoUrl:
         images={photoUrl ? [photoUrl] : []}
         previewIcon={<HugeiconsIcon icon={Leaf02Icon} size={40} strokeWidth={1.3} className="text-[var(--brand-strong)]/25" />}
         name={product.name}
-        tag={outOfStock ? { label: "Out of stock", color: "zinc" } : undefined}
+        tag={
+          outOfStock
+            ? { label: "Out of stock", color: "zinc" }
+            : product.quantity
+              ? { label: product.quantity, color: "zinc" }
+              : undefined
+        }
         description={product.description ?? undefined}
         price={product.price}
         currency="₹"

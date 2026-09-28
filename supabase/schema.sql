@@ -6,6 +6,7 @@ create table if not exists products (
   description text,
   image_path text,
   category text,
+  quantity text,
   is_active boolean not null default true,
   in_stock boolean not null default true,
   created_at timestamptz not null default now(),

@@ -9,13 +9,14 @@ import {
   Delete02Icon,
   ShoppingCartCheck01Icon,
   ShoppingCartRemove01Icon,
+  MoreVerticalIcon,
 } from "@hugeicons/core-free-icons";
 import type { Product } from "@/lib/types";
 import { Surface } from "@/components/stepwise/primitives/surface";
 import { Text } from "@/components/stepwise/typography";
-import { Button } from "@/components/stepwise/button";
 import { Modal } from "@/components/stepwise/modal";
 import { toast } from "@/components/stepwise/toast";
+import { DropdownMenu } from "@/components/stepwise/dropdown-menu";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
 
 export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
@@ -86,65 +87,64 @@ export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: 
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <Text variant="body-soft" className="truncate">
+        <Text variant="body-soft" className="line-clamp-2">
           {product.name}
         </Text>
-        <Text variant="caption-soft" className="text-[var(--foreground)]/50">
+        <Text variant="caption-soft" className="mt-0.5 text-[var(--foreground)]/50">
           ₹{product.price}
+          {product.quantity && ` · ${product.quantity}`}
           {product.category && ` · ${product.category}`}
           {!product.is_active && " · hidden"}
         </Text>
       </div>
-      <div className="flex flex-shrink-0 items-center gap-1" onClick={stop}>
-        <Button
-          variant="ghost"
-          size="sm"
-          iconOnly
-          disabled={busy}
-          aria-label={product.in_stock ? "Mark out of stock" : "Mark in stock"}
-          icon={
-            <HugeiconsIcon
-              icon={product.in_stock ? ShoppingCartRemove01Icon : ShoppingCartCheck01Icon}
-              size={16}
-              strokeWidth={1.8}
-            />
+      <div className="flex-shrink-0" onClick={stop}>
+        <DropdownMenu
+          align="end"
+          trigger={
+            <button
+              type="button"
+              disabled={busy}
+              aria-label="More actions"
+              className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--foreground)]/60 hover:bg-black/5 disabled:opacity-40"
+            >
+              <HugeiconsIcon icon={MoreVerticalIcon} size={18} strokeWidth={1.8} />
+            </button>
           }
-          onClick={() =>
-            patch(
-              { in_stock: !product.in_stock },
-              product.in_stock ? "Marked out of stock" : "Marked in stock",
-            )
-          }
-        />
-        <Button
-          variant="ghost"
-          size="sm"
-          iconOnly
-          disabled={busy}
-          aria-label={product.is_active ? "Hide from storefront" : "Show on storefront"}
-          icon={
-            <HugeiconsIcon
-              icon={product.is_active ? ViewIcon : ViewOffIcon}
-              size={16}
-              strokeWidth={1.8}
-            />
-          }
-          onClick={() =>
-            patch(
-              { is_active: !product.is_active },
-              product.is_active ? "Hidden from storefront" : "Now visible on storefront",
-            )
-          }
-        />
-        <Button
-          variant="ghost"
-          size="sm"
-          iconOnly
-          disabled={busy}
-          aria-label="Delete"
-          icon={<HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.8} />}
-          onClick={() => setConfirmingDelete(true)}
-          className="text-rose-500"
+          items={[
+            {
+              label: product.in_stock ? "Mark out of stock" : "Mark in stock",
+              icon: (
+                <HugeiconsIcon
+                  icon={product.in_stock ? ShoppingCartRemove01Icon : ShoppingCartCheck01Icon}
+                  size={16}
+                  strokeWidth={1.8}
+                />
+              ),
+              onSelect: () =>
+                patch(
+                  { in_stock: !product.in_stock },
+                  product.in_stock ? "Marked out of stock" : "Marked in stock",
+                ),
+            },
+            {
+              label: product.is_active ? "Hide from storefront" : "Show on storefront",
+              icon: (
+                <HugeiconsIcon icon={product.is_active ? ViewOffIcon : ViewIcon} size={16} strokeWidth={1.8} />
+              ),
+              onSelect: () =>
+                patch(
+                  { is_active: !product.is_active },
+                  product.is_active ? "Hidden from storefront" : "Now visible on storefront",
+                ),
+            },
+            { separator: true },
+            {
+              label: "Delete product",
+              icon: <HugeiconsIcon icon={Delete02Icon} size={16} strokeWidth={1.8} />,
+              destructive: true,
+              onSelect: () => setConfirmingDelete(true),
+            },
+          ]}
         />
       </div>
 

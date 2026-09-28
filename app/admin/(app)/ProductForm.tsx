@@ -28,6 +28,7 @@ export function ProductForm({
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product?.price?.toString() ?? "");
   const [category, setCategory] = useState(product?.category ?? "");
+  const [quantity, setQuantity] = useState(product?.quantity ?? "");
   const [inStock, setInStock] = useState(product?.in_stock ?? true);
   const [notes, setNotes] = useState("");
   const [description, setDescription] = useState(product?.description ?? "");
@@ -91,6 +92,7 @@ export function ProductForm({
       form.set("price", price);
       form.set("description", description);
       form.set("category", category);
+      form.set("quantity", quantity);
       form.set("in_stock", String(inStock));
       if (photoFile) form.set("photo", photoFile);
 
@@ -194,6 +196,13 @@ export function ProductForm({
         placeholder="e.g. Immunity, Digestion, Skin Care"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
+      />
+
+      <Input
+        label="Quantity / pack size (optional)"
+        placeholder="e.g. 60 Tablets, 500 ml, 100 g"
+        value={quantity}
+        onChange={(e) => setQuantity(e.target.value)}
       />
 
       <Toggle

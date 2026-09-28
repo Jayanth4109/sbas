@@ -5,6 +5,7 @@ export type Product = {
   description: string | null;
   image_path: string | null;
   category: string | null;
+  quantity: string | null;
   is_active: boolean;
   in_stock: boolean;
   created_at: string;
