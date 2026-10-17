@@ -29,7 +29,7 @@ export function ProductForm({
   const galleryInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(product?.name ?? "");
-  const [price, setPrice] = useState(product?.price?.toString() ?? "");
+  const [price, setPrice] = useState(product?.price ? product.price.toString() : "");
   const [mrp, setMrp] = useState(product?.mrp?.toString() ?? "");
   const [category, setCategory] = useState(product?.category ?? "");
   const [quantity, setQuantity] = useState(product?.quantity ?? "");

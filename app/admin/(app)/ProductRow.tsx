@@ -20,7 +20,17 @@ import { DropdownMenu } from "@/components/stepwise/dropdown-menu";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
 import { discountPercent } from "@/lib/discount";
 
-export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
+export function ProductRow({
+  product,
+  photoUrl,
+  selected,
+  onToggleSelect,
+}: {
+  product: Product;
+  photoUrl: string | null;
+  selected?: boolean;
+  onToggleSelect?: () => void;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -72,8 +82,19 @@ export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: 
       onKeyDown={(e) => {
         if (e.key === "Enter") router.push(`/admin/products/${product.id}/edit`);
       }}
-      className="flex cursor-pointer items-center gap-4 bg-white p-3 transition-colors hover:bg-black/[0.02]"
+      className="flex cursor-pointer items-center gap-3 bg-white p-3 transition-colors hover:bg-black/[0.02]"
     >
+      {onToggleSelect && (
+        <div onClick={stop} className="flex-shrink-0">
+          <input
+            type="checkbox"
+            checked={Boolean(selected)}
+            onChange={onToggleSelect}
+            aria-label={`Select ${product.name}`}
+            className="h-5 w-5 cursor-pointer accent-[var(--brand)]"
+          />
+        </div>
+      )}
       <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-[16px] bg-brand-soft">
         {photoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -92,7 +113,7 @@ export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: 
           {product.name}
         </Text>
         <Text variant="caption-soft" className="mt-0.5 text-[var(--foreground)]/50">
-          ₹{product.price}
+          {product.price > 0 ? `₹${product.price}` : "No price yet"}
           {discountPercent(product.mrp, product.price) > 0 &&
             ` (was ₹${product.mrp}, ${discountPercent(product.mrp, product.price)}% off)`}
           {product.quantity && ` · ${product.quantity}`}
