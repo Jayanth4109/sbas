@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Search01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import type { Product } from "@/lib/types";
@@ -9,46 +9,61 @@ import { ProductCard } from "@/components/ProductCard";
 import { Text } from "@/components/stepwise/typography";
 import { Input } from "@/components/stepwise/input";
 import { Chip } from "@/components/stepwise/chip";
+import { Button } from "@/components/stepwise/button";
 
 export function ProductsBrowser({
   products,
   photoUrls,
+  categories,
+  total,
+  page,
+  pageSize,
+  query,
+  category,
 }: {
   products: Product[];
   photoUrls: Record<string, string | null>;
+  categories: string[];
+  total: number;
+  page: number;
+  pageSize: number;
+  query: string;
+  category: string;
 }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState(searchParams.get("category") ?? "");
+  const [search, setSearch] = useState(query);
+  const firstRender = useRef(true);
+  const lastPage = Math.max(1, Math.ceil(total / pageSize));
 
-  const categories = useMemo(() => {
-    const set = new Set<string>();
-    for (const p of products) {
-      if (p.category?.trim()) set.add(p.category.trim());
+  function go(next: { q?: string; category?: string; p?: number }, scroll = false) {
+    const params = new URLSearchParams();
+    const q = next.q ?? query;
+    const c = next.category ?? category;
+    const p = next.p ?? 1;
+    if (q) params.set("q", q);
+    if (c) params.set("category", c);
+    if (p > 1) params.set("p", String(p));
+    const qs = params.toString();
+    router.replace(qs ? `/products?${qs}` : "/products", { scroll });
+  }
+
+  // Wait for a pause in typing before asking the server.
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
     }
-    return Array.from(set).sort();
-  }, [products]);
+    const t = setTimeout(() => {
+      if (search.trim() !== query) go({ q: search.trim(), p: 1 });
+    }, 350);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return products.filter((p) => {
-      if (category && p.category !== category) return false;
-      if (!q) return true;
-      return (
-        p.name.toLowerCase().includes(q) ||
-        p.category?.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q)
-      );
-    });
-  }, [products, query, category]);
+  const filtered = products;
 
   function selectCategory(next: string) {
-    setCategory(next);
-    const params = new URLSearchParams(searchParams.toString());
-    if (next) params.set("category", next);
-    else params.delete("category");
-    router.replace(params.size ? `/products?${params.toString()}` : "/products", { scroll: false });
+    go({ category: next, p: 1 });
   }
 
   return (
@@ -57,8 +72,8 @@ export function ProductsBrowser({
         <Input
           label=""
           placeholder="Search medicines, categories..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           icon={<HugeiconsIcon icon={Search01Icon} size={18} strokeWidth={1.8} />}
         />
 
@@ -101,8 +116,8 @@ export function ProductsBrowser({
             <button
               type="button"
               onClick={() => {
-                setQuery("");
-                selectCategory("");
+                setSearch("");
+                go({ q: "", category: "", p: 1 });
               }}
               className="mt-1 flex items-center gap-1 text-[13px] font-medium text-[var(--brand-strong)] hover:underline"
             >
@@ -120,6 +135,20 @@ export function ProductsBrowser({
               photoUrl={photoUrls[product.id] ?? null}
             />
           ))}
+        </div>
+      )}
+
+      {lastPage > 1 && (
+        <div className="mt-10 flex items-center justify-between">
+          <Button variant="soft" size="sm" disabled={page <= 1} onClick={() => go({ p: page - 1 }, true)}>
+            Previous
+          </Button>
+          <Text variant="caption-soft" className="text-[var(--foreground)]/55">
+            Page {page} of {lastPage}
+          </Text>
+          <Button variant="soft" size="sm" disabled={page >= lastPage} onClick={() => go({ p: page + 1 }, true)}>
+            Next
+          </Button>
         </div>
       )}
     </div>

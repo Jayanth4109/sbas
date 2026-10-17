@@ -44,6 +44,7 @@ export default async function LandingPage() {
     .from("products")
     .select("*")
     .eq("is_active", true)
+    .not("image_path", "is", null)
     .order("created_at", { ascending: false })
     .limit(250)
     .returns<Product[]>();
