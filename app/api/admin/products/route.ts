@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { isAdminAuthed } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT_PHOTOS_BUCKET } from "@/lib/storage";
+import { parseSizes } from "@/lib/sizes";
 
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -32,6 +33,8 @@ export async function POST(req: Request) {
   const description = form.get("description");
   const category = form.get("category");
   const quantity = form.get("quantity");
+  const sizeUnitRaw = form.get("size_unit");
+  const sizesRaw = form.get("sizes");
   const inStockRaw = form.get("in_stock");
   const photo = form.get("photo");
 
@@ -56,6 +59,9 @@ export async function POST(req: Request) {
       );
     }
   }
+
+  const parsedSizes = parseSizes(sizeUnitRaw, sizesRaw);
+  if (!parsedSizes.ok) return NextResponse.json({ error: parsedSizes.error }, { status: 400 });
 
   const supabase = createAdminClient();
   let imagePath: string | null = null;
@@ -86,6 +92,8 @@ export async function POST(req: Request) {
       description: typeof description === "string" && description.trim() ? description.trim() : null,
       category: typeof category === "string" && category.trim() ? category.trim() : null,
       quantity: typeof quantity === "string" && quantity.trim() ? quantity.trim() : null,
+      size_unit: parsedSizes.unit,
+      sizes: parsedSizes.sizes,
       image_path: imagePath,
       is_active: true,
       in_stock: inStockRaw !== "false",

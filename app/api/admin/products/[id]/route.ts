@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { isAdminAuthed } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { PRODUCT_PHOTOS_BUCKET } from "@/lib/storage";
+import { parseSizes } from "@/lib/sizes";
 
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -25,6 +26,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const description = form.get("description");
     const category = form.get("category");
     const quantity = form.get("quantity");
+    const sizeUnitRaw = form.get("size_unit");
+    const sizesRaw = form.get("sizes");
     const isActive = form.get("is_active");
     const inStock = form.get("in_stock");
     const photo = form.get("photo");
@@ -62,6 +65,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     if (typeof description === "string") updates.description = description.trim() || null;
     if (typeof category === "string") updates.category = category.trim() || null;
     if (typeof quantity === "string") updates.quantity = quantity.trim() || null;
+    if (sizeUnitRaw !== null || sizesRaw !== null) {
+      const parsed = parseSizes(sizeUnitRaw, sizesRaw);
+      if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: 400 });
+      updates.size_unit = parsed.unit;
+      updates.sizes = parsed.sizes;
+    }
     if (typeof isActive === "string") updates.is_active = isActive === "true";
     if (typeof inStock === "string") updates.in_stock = inStock === "true";
 

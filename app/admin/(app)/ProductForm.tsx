@@ -4,15 +4,17 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Camera01Icon, ImageUpload01Icon, AiMagicIcon } from "@hugeicons/core-free-icons";
-import type { Product } from "@/lib/types";
+import type { Product, SizeUnit } from "@/lib/types";
 import { Surface } from "@/components/stepwise/primitives/surface";
 import { Text } from "@/components/stepwise/typography";
 import { Input } from "@/components/stepwise/input";
 import { Button } from "@/components/stepwise/button";
 import { Toggle } from "@/components/stepwise/toggle";
+import { Segment } from "@/components/stepwise/segment";
 import { toast } from "@/components/stepwise/toast";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
 import { discountPercent } from "@/lib/discount";
+import { SIZE_UNITS } from "@/lib/sizes";
 
 export function ProductForm({
   product,
@@ -31,6 +33,8 @@ export function ProductForm({
   const [mrp, setMrp] = useState(product?.mrp?.toString() ?? "");
   const [category, setCategory] = useState(product?.category ?? "");
   const [quantity, setQuantity] = useState(product?.quantity ?? "");
+  const [sizeUnit, setSizeUnit] = useState<SizeUnit>(product?.size_unit ?? "g");
+  const [sizes, setSizes] = useState(product?.sizes?.join(", ") ?? "");
   const [inStock, setInStock] = useState(product?.in_stock ?? true);
   const [notes, setNotes] = useState("");
   const [description, setDescription] = useState(product?.description ?? "");
@@ -111,6 +115,8 @@ export function ProductForm({
       form.set("description", description);
       form.set("category", category);
       form.set("quantity", quantity);
+      form.set("size_unit", sizeUnit);
+      form.set("sizes", sizes);
       form.set("in_stock", String(inStock));
       if (photoFile) form.set("photo", photoFile);
 
@@ -244,6 +250,26 @@ export function ProductForm({
         value={quantity}
         onChange={(e) => setQuantity(e.target.value)}
       />
+
+      <div className="flex flex-col gap-2">
+        <Text variant="caption" className="text-[var(--foreground)]/70">
+          Sizes available (optional)
+        </Text>
+        <Segment
+          size="sm"
+          options={SIZE_UNITS.map((u) => ({ value: u.value, label: u.label }))}
+          value={sizeUnit}
+          onChange={setSizeUnit}
+        />
+        <Input
+          aria-label="Sizes available"
+          inputMode="decimal"
+          placeholder={sizeUnit === "g" ? "e.g. 100, 200, 500" : sizeUnit === "ml" ? "e.g. 100, 200, 450" : "e.g. 30, 60, 100"}
+          value={sizes}
+          onChange={(e) => setSizes(e.target.value.replace(/[^0-9., ]/g, ""))}
+          hint="Separate sizes with commas. Customers see these on the product."
+        />
+      </div>
 
       <Toggle
         checked={inStock}

@@ -10,6 +10,9 @@ create table if not exists products (
   image_path text,
   category text,
   quantity text,
+  -- Sizes we stock, e.g. unit 'g' with {100,200}. Customers see them as "100 g, 200 g"; the exact size is settled on WhatsApp.
+  size_unit text check (size_unit is null or size_unit in ('g', 'ml', 'tablets', 'capsules', 'pcs')),
+  sizes numeric[] not null default '{}',
   is_active boolean not null default true,
   in_stock boolean not null default true,
   created_at timestamptz not null default now(),

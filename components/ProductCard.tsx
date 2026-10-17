@@ -7,10 +7,12 @@ import { Text } from "@/components/stepwise/typography";
 import { toast } from "@/components/stepwise/toast";
 import type { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart";
+import { formatSizes } from "@/lib/sizes";
 
 export function ProductCard({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
   const { addItem } = useCart();
   const outOfStock = !product.in_stock;
+  const sizeLabel = formatSizes(product.size_unit, product.sizes) ?? product.quantity;
 
   function handleAddToCart() {
     if (outOfStock) {
@@ -30,8 +32,8 @@ export function ProductCard({ product, photoUrl }: { product: Product; photoUrl:
         tag={
           outOfStock
             ? { label: "Out of stock", color: "zinc" }
-            : product.quantity
-              ? { label: product.quantity, color: "zinc" }
+            : sizeLabel
+              ? { label: sizeLabel, color: "zinc" }
               : undefined
         }
         description={product.description ?? undefined}
