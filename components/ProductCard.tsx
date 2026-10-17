@@ -36,6 +36,7 @@ export function ProductCard({ product, photoUrl }: { product: Product; photoUrl:
         }
         description={product.description ?? undefined}
         price={product.price}
+        originalPrice={product.mrp ?? undefined}
         currency="₹"
         ctaLabel={outOfStock ? "Out of stock" : "Add to cart"}
         onAddToCart={handleAddToCart}

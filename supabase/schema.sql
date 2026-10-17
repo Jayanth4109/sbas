@@ -3,6 +3,9 @@ create table if not exists products (
   id uuid primary key default gen_random_uuid(),
   name text not null,
   price numeric(10, 2) not null check (price >= 0),
+  -- Original price (MRP). `price` is the selling price; a discount is shown
+  -- when mrp > price.
+  mrp numeric(10, 2) check (mrp is null or mrp >= 0),
   description text,
   image_path text,
   category text,

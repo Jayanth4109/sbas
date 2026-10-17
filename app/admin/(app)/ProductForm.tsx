@@ -12,6 +12,7 @@ import { Button } from "@/components/stepwise/button";
 import { Toggle } from "@/components/stepwise/toggle";
 import { toast } from "@/components/stepwise/toast";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
+import { discountPercent } from "@/lib/discount";
 
 export function ProductForm({
   product,
@@ -27,6 +28,7 @@ export function ProductForm({
 
   const [name, setName] = useState(product?.name ?? "");
   const [price, setPrice] = useState(product?.price?.toString() ?? "");
+  const [mrp, setMrp] = useState(product?.mrp?.toString() ?? "");
   const [category, setCategory] = useState(product?.category ?? "");
   const [quantity, setQuantity] = useState(product?.quantity ?? "");
   const [inStock, setInStock] = useState(product?.in_stock ?? true);
@@ -38,6 +40,12 @@ export function ProductForm({
   const [saving, setSaving] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
   const [priceError, setPriceError] = useState<string | null>(null);
+  const [mrpError, setMrpError] = useState<string | null>(null);
+
+  const priceNum = Number(price);
+  const mrpNum = Number(mrp);
+  const livePercent =
+    mrp.trim() && priceNum > 0 && Number.isFinite(mrpNum) ? discountPercent(mrpNum, priceNum) : 0;
 
   function onPhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -72,16 +80,25 @@ export function ProductForm({
     e.preventDefault();
     setNameError(null);
     setPriceError(null);
+    setMrpError(null);
 
     let hasError = false;
     if (!name.trim()) {
       setNameError("Enter a product name");
       hasError = true;
     }
-    const priceNum = Number(price);
     if (!price.trim() || !Number.isFinite(priceNum) || priceNum <= 0) {
-      setPriceError("Enter a valid price");
+      setPriceError("Enter a valid selling price");
       hasError = true;
+    }
+    if (mrp.trim()) {
+      if (!Number.isFinite(mrpNum) || mrpNum <= 0) {
+        setMrpError("Enter a valid original price");
+        hasError = true;
+      } else if (Number.isFinite(priceNum) && mrpNum < priceNum) {
+        setMrpError("Original price can't be lower than the selling price");
+        hasError = true;
+      }
     }
     if (hasError) return;
 
@@ -90,6 +107,7 @@ export function ProductForm({
       const form = new FormData();
       form.set("name", name.trim());
       form.set("price", price);
+      form.set("mrp", mrp);
       form.set("description", description);
       form.set("category", category);
       form.set("quantity", quantity);
@@ -183,12 +201,34 @@ export function ProductForm({
       />
 
       <Input
-        label="Price (₹)"
+        label="Original price - MRP (₹) (optional)"
         inputMode="decimal"
-        placeholder="e.g. 250"
+        placeholder="e.g. 500"
+        value={mrp}
+        onChange={(e) => {
+          setMrp(e.target.value.replace(/[^0-9.]/g, ""));
+          setMrpError(null);
+        }}
+        error={mrpError ?? undefined}
+        hint="Fill this only if you're giving a discount"
+      />
+
+      <Input
+        label="Your selling price (₹)"
+        inputMode="decimal"
+        placeholder="e.g. 425"
         value={price}
-        onChange={(e) => setPrice(e.target.value.replace(/[^0-9.]/g, ""))}
+        onChange={(e) => {
+          setPrice(e.target.value.replace(/[^0-9.]/g, ""));
+          setPriceError(null);
+          setMrpError(null);
+        }}
         error={priceError ?? undefined}
+        hint={
+          livePercent > 0
+            ? `Customers will see ${livePercent}% off - they save ₹${(mrpNum - priceNum).toFixed(0)}`
+            : undefined
+        }
       />
 
       <Input

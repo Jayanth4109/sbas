@@ -21,6 +21,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const form = await req.formData();
     const name = form.get("name");
     const priceRaw = form.get("price");
+    const mrpRaw = form.get("mrp");
     const description = form.get("description");
     const category = form.get("category");
     const quantity = form.get("quantity");
@@ -35,6 +36,28 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         return NextResponse.json({ error: "Enter a valid price" }, { status: 400 });
       }
       updates.price = price;
+    }
+    if (typeof mrpRaw === "string") {
+      if (mrpRaw.trim() === "") {
+        updates.mrp = null;
+      } else {
+        const mrp = Number(mrpRaw);
+        if (!Number.isFinite(mrp) || mrp < 0) {
+          return NextResponse.json({ error: "Enter a valid original price" }, { status: 400 });
+        }
+        let effectivePrice = updates.price as number | undefined;
+        if (effectivePrice === undefined) {
+          const { data: current } = await supabase.from("products").select("price").eq("id", id).maybeSingle();
+          effectivePrice = current?.price;
+        }
+        if (effectivePrice !== undefined && mrp < effectivePrice) {
+          return NextResponse.json(
+            { error: "Original price can't be lower than the selling price" },
+            { status: 400 },
+          );
+        }
+        updates.mrp = mrp;
+      }
     }
     if (typeof description === "string") updates.description = description.trim() || null;
     if (typeof category === "string") updates.category = category.trim() || null;

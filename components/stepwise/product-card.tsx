@@ -34,6 +34,8 @@ export interface ProductCardProps {
   /** Revealed on demand behind a "View Details" toggle, not shown up front. */
   description? : string
   price?       : number
+  /** Original price. When higher than `price`, it's shown struck through with a "% off" badge. */
+  originalPrice?: number
   currency?    : string
   colors?      : string[]
   sizes?       : string[]
@@ -124,6 +126,7 @@ export function ProductCard({
   tag,
   description,
   price,
+  originalPrice,
   currency    = '$',
   colors      = [],
   sizes       = [],
@@ -145,6 +148,10 @@ export function ProductCard({
   const [activeSize, setActiveSize]   = useState(selectedSize ?? sizes[0])
   const [activeColor, setActiveColor] = useState(colors[0])
   const [detailsOpen, setDetailsOpen] = useState(false)
+  const discountPct =
+    price !== undefined && originalPrice !== undefined && originalPrice > price
+      ? Math.round(((originalPrice - price) / originalPrice) * 100)
+      : 0
 
   return (
     <div className={cn('relative w-full max-w-[345px]', className)}>
@@ -176,6 +183,12 @@ export function ProductCard({
               </svg>
             )}
           </div>
+        )}
+
+        {discountPct > 0 && (
+          <span className="absolute left-3 top-3 rounded-full bg-rose-500 px-2.5 py-1 text-[11px] font-semibold tracking-[-0.01em] text-white shadow-sm">
+            {discountPct}% OFF
+          </span>
         )}
 
         {/* Wishlist - subtle press/hover feedback (was a jarring 110%→90%
@@ -345,6 +358,11 @@ export function ProductCard({
             {price !== undefined && (
               <span className="shrink-0 text-[16px] font-semibold tracking-[-0.03em] text-zinc-700 dark:text-zinc-200 tabular-nums">
                 <span className="text-green-500 font-semibold">{currency}</span>{price}
+                {discountPct > 0 && (
+                  <span className="block text-[11px] font-normal leading-none tracking-normal text-zinc-400 line-through">
+                    {currency}{originalPrice}
+                  </span>
+                )}
               </span>
             )}
             <div className="flex-1">

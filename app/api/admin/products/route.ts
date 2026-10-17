@@ -28,6 +28,7 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const name = form.get("name");
   const priceRaw = form.get("price");
+  const mrpRaw = form.get("mrp");
   const description = form.get("description");
   const category = form.get("category");
   const quantity = form.get("quantity");
@@ -40,6 +41,20 @@ export async function POST(req: Request) {
   const price = Number(priceRaw);
   if (!Number.isFinite(price) || price < 0) {
     return NextResponse.json({ error: "Enter a valid price" }, { status: 400 });
+  }
+
+  let mrp: number | null = null;
+  if (typeof mrpRaw === "string" && mrpRaw.trim() !== "") {
+    mrp = Number(mrpRaw);
+    if (!Number.isFinite(mrp) || mrp < 0) {
+      return NextResponse.json({ error: "Enter a valid original price" }, { status: 400 });
+    }
+    if (mrp < price) {
+      return NextResponse.json(
+        { error: "Original price can't be lower than the selling price" },
+        { status: 400 },
+      );
+    }
   }
 
   const supabase = createAdminClient();
@@ -67,6 +82,7 @@ export async function POST(req: Request) {
     .insert({
       name: name.trim(),
       price,
+      mrp,
       description: typeof description === "string" && description.trim() ? description.trim() : null,
       category: typeof category === "string" && category.trim() ? category.trim() : null,
       quantity: typeof quantity === "string" && quantity.trim() ? quantity.trim() : null,

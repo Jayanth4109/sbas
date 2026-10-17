@@ -18,6 +18,7 @@ import { Modal } from "@/components/stepwise/modal";
 import { toast } from "@/components/stepwise/toast";
 import { DropdownMenu } from "@/components/stepwise/dropdown-menu";
 import { SQUIRCLE_BORDER } from "@/lib/ui";
+import { discountPercent } from "@/lib/discount";
 
 export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: string | null }) {
   const router = useRouter();
@@ -92,6 +93,8 @@ export function ProductRow({ product, photoUrl }: { product: Product; photoUrl: 
         </Text>
         <Text variant="caption-soft" className="mt-0.5 text-[var(--foreground)]/50">
           ₹{product.price}
+          {discountPercent(product.mrp, product.price) > 0 &&
+            ` (was ₹${product.mrp}, ${discountPercent(product.mrp, product.price)}% off)`}
           {product.quantity && ` · ${product.quantity}`}
           {product.category && ` · ${product.category}`}
           {!product.is_active && " · hidden"}
